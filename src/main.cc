@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <time.h>
+#include <string>
 
 using namespace std;
 
@@ -17,7 +18,11 @@ int main(int argc, const char **argv) {
     }
 
     ofstream file;
-    file.open(argv[2]);
+    static char fileName[30];
+
+    sprintf(fileName, "../results/%s", argv[2]);
+
+    file.open(fileName);
 
     if (!file.is_open()) {
         cout << "Error opening file.\n";

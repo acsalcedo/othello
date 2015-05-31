@@ -12,4 +12,4 @@ othello.o: main.cc othello_cut.h negamax.h scout.h
 .PHONY: clean
 
 clean:
-	rm -f othello *.o *.txt
+	rm -f othello *.o ../results/*.txt
