@@ -1,22 +1,3 @@
-/*
- *  Copyright (C) 2012 Universidad Simon Bolivar
- * 
- *  Permission is hereby granted to distribute this software for
- *  non-commercial research purposes, provided that this copyright
- *  notice is included with any such distribution.
- *  
- *  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
- *  EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE
- *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- *  PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE
- *  SOFTWARE IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU
- *  ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
- *  
- *  Blai Bonet, bonet@ldc.usb.ve
- *
- *  Last revision: 11/08/2012
- *
- */
 
 #include <cassert>
 #include <iostream>
@@ -136,6 +117,16 @@ class state_t {
         return valid_moves.empty() ? -1 : valid_moves[lrand48() % valid_moves.size()];
     }
 
+    std::vector<int> get_valid_moves(bool color) {
+        std::vector<int> valid_moves;
+        for( int pos = 0; pos < DIM; ++pos ) {
+            if( (color && is_black_move(pos)) || (!color && is_white_move(pos)) ) {
+                valid_moves.push_back(pos);
+            }
+        }
+        return valid_moves;
+    }
+
     bool operator<(const state_t &s) const {
         return (free_ < s.free_) || ((free_ == s.free_) && (pos_ < s.pos_));
     }
@@ -200,21 +191,42 @@ inline bool state_t::outflank(bool color, int pos) const {
         if( (p < x - 1) && (p >= cols[pos - 4]) && !is_free(*p) ) return true;
     }
 
-    // [CHECK OVER DIAGONALS REMOVED]
+    // Check diagonally left to right
+    x = dia1[pos - 4];
+    while( *x != pos ) ++x;
+    if( *(x+1) != -1 ) {
+        for( p = x + 1; (*p != -1) && !is_free(*p) && (color ^ is_black(*p)); ++p );
+        if( (p > x + 1) && (*p != -1) && !is_free(*p) ) return true;
+    }
+    if( x != dia1[pos - 4] ) {
+        for( p = x - 1; (p >= dia1[pos - 4]) && !is_free(*p) && (color ^ is_black(*p)); --p );
+        if( (p < x - 1) && (p >= dia1[pos - 4]) && !is_free(*p) ) return true;
+    }
 
+    // Check diagonally right to left
+    x = dia2[pos - 4];
+    while( *x != pos ) ++x;
+    if( *(x+1) != -1 ) {
+        for( p = x + 1; (*p != -1) && !is_free(*p) && (color ^ is_black(*p)); ++p );
+        if( (p > x + 1) && (*p != -1) && !is_free(*p) ) return true;
+    }
+    if( x != dia2[pos - 4] ) {
+        for( p = x - 1; (p >= dia2[pos - 4]) && !is_free(*p) && (color ^ is_black(*p)); --p );
+        if( (p < x - 1) && (p >= dia2[pos - 4]) && !is_free(*p) ) return true;
+    }
     return false;
 }
 
 inline void state_t::set_color(bool color, int pos) {
-    if( color ) {
-        if( pos < 4 ) {
+    if(color) {
+        if(pos < 4) {
             t_ |= 1 << pos;
         } else {
             free_ |= 1 << pos- 4;
             pos_ |= 1 << pos - 4;
         }
     } else {
-        if( pos < 4 ) {
+        if(pos < 4) {
             t_ &= ~(1 << pos);
         } else {
             free_ |= 1 << pos - 4;
@@ -227,7 +239,7 @@ inline state_t state_t::move(bool color, int pos) const {
     state_t s(*this);
     if( pos >= DIM ) return s;
 
-    assert(outflank(color, pos));
+   assert(outflank(color, pos));
     s.set_color(color, pos);
 
     // Flip color of outflanked stones
@@ -264,7 +276,37 @@ inline state_t state_t::move(bool color, int pos) const {
         }
     }
 
-    // [PROCESS OF DIAGONALS REMOVED]
+    //Process diagonally left to right
+    x = dia1[pos - 4];
+    while( *x != pos ) ++x;
+    if( *(x+1) != -1 ) {
+        for( p = x + 1; (*p != -1) && !is_free(*p) && (color ^ is_black(*p)); ++p );
+        if( (p > x + 1) && (*p != -1) && !is_free(*p) ) {
+            for( const int *q = x + 1; q < p; ++q ) s.set_color(color, *q);
+        }
+    }
+    if( x != dia1[pos - 4] ) {
+        for( p = x - 1; (p >= dia1[pos - 4]) && !is_free(*p) && (color ^ is_black(*p)); --p );
+        if( (p < x - 1) && (p >= dia1[pos - 4]) && !is_free(*p) ) {
+            for( const int *q = x - 1; q > p; --q ) s.set_color(color, *q);
+        }
+    }
+
+    //Process diagonally right to left
+    x = dia2[pos - 4];
+    while( *x != pos ) ++x;
+    if( *(x+1) != -1 ) {
+        for( p = x + 1; (*p != -1) && !is_free(*p) && (color ^ is_black(*p)); ++p );
+        if( (p > x + 1) && (*p != -1) && !is_free(*p) ) {
+            for( const int *q = x + 1; q < p; ++q ) s.set_color(color, *q);
+        }
+    }
+    if( x != dia2[pos - 4] ) {
+        for( p = x - 1; (p >= dia2[pos - 4]) && !is_free(*p) && (color ^ is_black(*p)); --p );
+        if( (p < x - 1) && (p >= dia2[pos - 4]) && !is_free(*p) ) {
+            for( const int *q = x - 1; q > p; --q ) s.set_color(color, *q);
+        }
+    }  
 
     return s;
 }
