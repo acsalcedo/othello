@@ -117,8 +117,14 @@ class state_t {
         return valid_moves.empty() ? -1 : valid_moves[lrand48() % valid_moves.size()];
     }
 
-    std::vector<int> get_valid_moves(bool color) {
+    std::vector<int> get_valid_moves(int color) {
         std::vector<int> valid_moves;
+
+        if (color == -1)
+            color = 1;
+        else
+            color = 0;
+
         for( int pos = 0; pos < DIM; ++pos ) {
             if( (color && is_black_move(pos)) || (!color && is_white_move(pos)) ) {
                 valid_moves.push_back(pos);
@@ -144,6 +150,7 @@ class state_t {
     void print_bits(std::ostream &os) const;
 };
 
+// Diferencia entre blancos y negros
 inline int state_t::value() const {
     int v = 0;
     for( int pos = 0; pos < DIM; ++pos ) {

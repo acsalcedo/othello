@@ -1,18 +1,26 @@
 
-#include "othello_cut.h"
 #include "negamax.h"
 #include "scout.h"
 #include <iostream>
 #include <fstream>
+#include <time.h>
 
 using namespace std;
 
 int main(int argc, const char **argv) {
     
-    if (argc < 2 || atoi(argv[1]) > 4 || atoi(argv[1]) < 1) {
-        cout << "Usage: ./othello <algorithmNumber>" << endl;
+    if (argc < 3 || atoi(argv[1]) > 4 || atoi(argv[1]) < 1) {
+        cout << "Usage: ./othello <algorithmNumber> <fileName>" << endl;
         cout << "algorithmNumber: " << endl;
         cout << "\t1: negamax\n\t2: negamax-AB\n\t3: scout\n\t4: negascout\n";
+        return 1;
+    }
+
+    ofstream file;
+    file.open(argv[2]);
+
+    if (!file.is_open()) {
+        cout << "Error opening file.\n";
         return 1;
     }
 
@@ -33,64 +41,54 @@ int main(int argc, const char **argv) {
 
     int algorithm = atoi(argv[1]);
 
-    switch (algorithm) {
-        case 1:
-            //negamax
-            break;
-        case 2:
-            //negamax-AB
-            break;
-        case 3:
-            //scout
-            break;
-        case 4:
-            //negascout
-            break;
+    //ITERACION DE NIVELES
+    // COLOR: black = 1 (max), white = -1 (min)
 
+    std::vector<state_t>::reverse_iterator it_states = PV_states.rbegin();
+
+    int color = -1;
+    int depth = 0;
+
+    clock_t t;
+
+    for (it_states; it_states != PV_states.rend() && depth < 15; it_states++) {
+
+        file << depth << "\t";
+        color *= -1;
+        
+        switch (algorithm) {
+            case 1:
+
+                t = clock();
+
+                file << negamax(*(it_states),depth,color) << "\t";
+
+                t = clock() - t;
+
+                break;
+            case 2:
+                
+                t = clock();
+
+                file << negamax_ab(*(it_states),depth,INT_MIN,INT_MAX,color) << "\t";
+
+                t = clock() - t;
+                
+                break;
+            case 3:
+                //scout
+                break;
+            case 4:
+                //negascout
+                break;
+
+        }
+        depth++;
+
+        file << ((float)t)/CLOCKS_PER_SEC << endl;
     }
 
-   // std::vector<state_t>::reverse_iterator it = PV_states.rbegin();
-
-    // black ends game
-    // int i = 0;
-
-    // for (it; it != PV_states.rend(); it++) {
-        
-    //     bool player = i % 2 == 0;
-
-    //     myfile << *it;
-    //     myfile << (player ? "Black" : "White") << endl;             
-    //     myfile << "---------------------------------------------" << endl;
-    //     myfile << "Valid states: " << endl;
-
-    //     std::vector<int> moves = (*it).get_valid_moves(player);
-
-    //     std::vector<int>::iterator it_children = moves.begin();
-
-    //     for (it_children; it_children != moves.end(); it_children++) {
-    //         myfile << ' ' << *it_children << endl;
-    //     }
-    //     myfile << "---------------------------------------------" << endl;
-    //     i++;
-    // }
-
-    //myfile.close();
-    // if(argc > 1) {
-
-    //     int n = atoi(argv[1]);
-    //     cout << endl << "Apply " << n << " random movements at empty board:";
-    //     state = state_t();
-
-    //     for(int i = 0; i < n; ++i) {
-    //         bool player = i % 2 == 0; // black moves first
-    //         int pos = state.get_random_move(player);
-    //         state = state.move(player, pos);
-    //         cout << " " << pos;
-    //     }
-
-    //     cout << endl << state;
-    // }
-
+    file.close();
     return 0;
 }
 
