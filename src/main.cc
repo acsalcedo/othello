@@ -7,25 +7,37 @@
 #include <string>
 #include <iomanip>
 
+#define MAX_DEPTH 15
+
 using namespace std;
 
 int main(int argc, const char **argv) {
     
-    if (argc < 3 || atoi(argv[1]) > 4 || atoi(argv[1]) < 1) {
+    ofstream file;
+
+    // Verificamos los parametros de entrada
+    if (argc < 2 || atoi(argv[1]) > 4 || atoi(argv[1]) < 1) {
         cout << "Usage: ./othello <algorithmNumber> <fileName>" << endl;
         cout << "algorithmNumber: " << endl;
         cout << "\t1: negamax\n\t2: negamax-AB\n\t3: scout\n\t4: negascout\n";
+        cout << "fileName is optional" << endl;
         return 1;
+
+    // Si no se ingreso un nombre de archivo
+    } else if (argc < 3) {
+        if (atoi(argv[1]) > 4)
+        cout << "File name not given" << endl;
+        cout << "Default name will be result.txt" <<endl;
+        file.open("../results/result.txt");
+
+    // Si se ingreso correctamente un nombre de archivo
+    } else {
+        static char fileName[30];
+        sprintf(fileName, "../results/%s", argv[2]);
+        file.open(fileName);
     }
-
-    ofstream file;
-
-    static char fileName[30];
-
-    sprintf(fileName, "../results/%s", argv[2]);
-
-    file.open(fileName);
-
+   
+    // Se verifica si hubo un error abriendo el archivo
     if (!file.is_open()) {
         cout << "Error opening file.\n";
         return 1;
@@ -35,6 +47,7 @@ int main(int argc, const char **argv) {
     std::vector<state_t> PV_states;
     
     // Black moves first and is equal to 0
+    // Almacenamos los estados de la variacion principal
     for(int i = 0; PV[i] != -1; ++i) {
 
         bool player = i % 2 == 0;
@@ -48,61 +61,59 @@ int main(int argc, const char **argv) {
 
     int algorithm = atoi(argv[1]);
 
-    //ITERACION DE NIVELES
-    // COLOR: black = 1 (max), white = -1 (min)
-
     std::vector<state_t>::reverse_iterator it_states = PV_states.rbegin();
 
-    int color = -1;
+    int color = -1; // black = 1 (max), white = -1 (min)
     int depth = 0;
-    int player = 1;
+    bool player = 1; // black = 0, white = 1
 
     clock_t t;
 
-    for (it_states; it_states != PV_states.rend() && depth < 10; it_states++) {
+    // Para cada estado de la variacion principal, usamos el algoritmo escogido
+    for (it_states; it_states != PV_states.rend() && depth < MAX_DEPTH; it_states++) {
 
         file << depth;
         color *= -1;
         player = !player;
         
         switch (algorithm) {
+            // Caso 1: Algoritmo negamax
             case 1:
 
                 t = clock();
-
                 file << setw(15) << negamax(*(it_states),depth,color);
-
                 t = clock() - t;
-
                 break;
+
+            // Caso 2: Algoritmo negamax alpha beta
             case 2:
                 
                 t = clock();
-
-                file << setw(15) << negamax_ab(*(it_states),depth,INT_MIN,INT_MAX,color);
-
+                file << setw(20) << negamax_ab(*(it_states),depth,INT_MIN,INT_MAX,color);
                 t = clock() - t;
-                
                 break;
+
+            // Caso 3: Algoritmo scout
             case 3:
                 
                 t = clock();
-
                 file << setw(15) << scout(*(it_states),depth,player);
-
                 t = clock() - t;
                 break;
+
+            // Caso 4: Algoritmo negascout
             case 4:
+
+                t = clock();
                 file << setw(15) << negascout(*(it_states),depth,INT_MIN,INT_MAX,color);
+                t = clock() - t;
                 break;
-
         }
-        depth++;
 
-        file << setw(15) << ((float)t)/CLOCKS_PER_SEC << std::scientific << endl;
+        depth++;
+        file << setw(20) << ((float)t)/CLOCKS_PER_SEC << std::scientific << endl;
     }
 
     file.close();
     return 0;
 }
-

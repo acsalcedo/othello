@@ -109,6 +109,7 @@ class state_t {
     state_t move(bool color, int pos) const;
     state_t black_move(int pos) { return move(true, pos); }
     state_t white_move(int pos) { return move(false, pos); }
+    
     int get_random_move(bool color) {
         std::vector<int> valid_moves;
         for( int pos = 0; pos < DIM; ++pos ) {

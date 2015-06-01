@@ -1,4 +1,4 @@
-# othello
+# Othello
 Proyecto 2 de Inteligencia Artificial I - Othello
 
 ### Para compilar:
@@ -14,4 +14,9 @@ Proyecto 2 de Inteligencia Artificial I - Othello
   - 2: negamax alpha-beta
   - 3: scout
   - 4: negascout
+
+\<nombreArchivo\>:
+  - Es opcional
+  - El valor por defecto es result.txt
+  - Se guarda en la carpeta results/
 
