@@ -5,6 +5,7 @@
 #include <fstream>
 #include <time.h>
 #include <string>
+#include <iomanip>
 
 using namespace std;
 
@@ -18,6 +19,7 @@ int main(int argc, const char **argv) {
     }
 
     ofstream file;
+
     static char fileName[30];
 
     sprintf(fileName, "../results/%s", argv[2]);
@@ -53,20 +55,22 @@ int main(int argc, const char **argv) {
 
     int color = -1;
     int depth = 0;
+    int player = 1;
 
     clock_t t;
 
-    for (it_states; it_states != PV_states.rend() && depth < 15; it_states++) {
+    for (it_states; it_states != PV_states.rend() && depth < 10; it_states++) {
 
-        file << depth << "\t";
+        file << depth;
         color *= -1;
+        player = !player;
         
         switch (algorithm) {
             case 1:
 
                 t = clock();
 
-                file << negamax(*(it_states),depth,color) << "\t";
+                file << setw(15) << negamax(*(it_states),depth,color);
 
                 t = clock() - t;
 
@@ -75,22 +79,27 @@ int main(int argc, const char **argv) {
                 
                 t = clock();
 
-                file << negamax_ab(*(it_states),depth,INT_MIN,INT_MAX,color) << "\t";
+                file << setw(15) << negamax_ab(*(it_states),depth,INT_MIN,INT_MAX,color);
 
                 t = clock() - t;
                 
                 break;
             case 3:
-                //scout
+                
+                t = clock();
+
+                file << setw(15) << scout(*(it_states),depth,player);
+
+                t = clock() - t;
                 break;
             case 4:
-                //negascout
+                file << setw(15) << negascout(*(it_states),depth,INT_MIN,INT_MAX,color);
                 break;
 
         }
         depth++;
 
-        file << ((float)t)/CLOCKS_PER_SEC << endl;
+        file << setw(15) << ((float)t)/CLOCKS_PER_SEC << std::scientific << endl;
     }
 
     file.close();

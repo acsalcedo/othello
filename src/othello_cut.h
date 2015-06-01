@@ -1,3 +1,5 @@
+#ifndef HEADER_OTHELLO_H
+#define HEADER_OTHELLO_H
 
 #include <cassert>
 #include <iostream>
@@ -119,11 +121,6 @@ class state_t {
 
     std::vector<int> get_valid_moves(int color) {
         std::vector<int> valid_moves;
-
-        if (color == -1)
-            color = 1;
-        else
-            color = 0;
 
         for( int pos = 0; pos < DIM; ++pos ) {
             if( (color && is_black_move(pos)) || (!color && is_white_move(pos)) ) {
@@ -357,3 +354,4 @@ inline std::ostream& operator<<(std::ostream &os, const state_t &state) {
     return os;
 }
 
+#endif

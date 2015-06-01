@@ -1,3 +1,6 @@
+#ifndef HEADER_NEGAMAX_H
+#define HEADER_NEGAMAX_H
+
 #include "othello_cut.h"
 #include <climits>
 
@@ -10,13 +13,14 @@ static int negamax(state_t node, int depth, int color) {
     
     int score = INT_MIN;
 
-    vector<int> moves = node.get_valid_moves(color);
+    bool player = color == -1 ? 1 : 0;
+
+    vector<int> moves = node.get_valid_moves(player);
     
     vector<int>::iterator children = moves.begin();
 
     int value;
 
-    bool player = color == -1 ? 1 : 0;
 
     for (children; children != moves.end(); children++) {
         
@@ -35,13 +39,13 @@ static int negamax_ab(state_t node, int depth, int alpha, int beta, int color) {
 
     int score = INT_MIN;
 
-    vector<int> moves = node.get_valid_moves(color);
+    bool player = color == -1 ? 1 : 0;
+
+    vector<int> moves = node.get_valid_moves(player);
     
     vector<int>::iterator children = moves.begin();
 
     int value;
-
-    bool player = color == -1 ? 1 : 0;
 
     for (children; children != moves.end(); children++) {
     
@@ -55,3 +59,5 @@ static int negamax_ab(state_t node, int depth, int alpha, int beta, int color) {
     }
     return score;
 }
+
+#endif
