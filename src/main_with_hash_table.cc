@@ -21,6 +21,7 @@ class hash_table_t : public tr1::unordered_map<state_t, stored_info_t, hash_func
 };
 
 int main(int argc, const char **argv) {
+
     hash_table_t my_hash_table;
 
     // stores one state in hash table
