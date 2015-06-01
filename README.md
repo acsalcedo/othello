@@ -2,7 +2,8 @@
 Proyecto 2 de Inteligencia Artificial I - Othello
 
 ### Para compilar:
-make
+
+`make`
 
 ### Para correr:
 
