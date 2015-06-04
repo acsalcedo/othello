@@ -7,7 +7,7 @@
 #include <string>
 #include <iomanip>
 
-#define MAX_DEPTH 15
+#define MAX_DEPTH 9
 
 using namespace std;
 
@@ -63,13 +63,15 @@ int main(int argc, const char **argv) {
 
     std::vector<state_t>::reverse_iterator it_states = PV_states.rbegin();
 
-    int color = -1; // black = 1 (max), white = -1 (min)
+    int color = 1; // black = 1 (max), white = -1 (min)
     int depth = 0;
     bool player = 1; // black = 0, white = 1
 
     clock_t t;
     int expandidos;
     int generados;
+
+    //it_states++;
     // Para cada estado de la variacion principal, usamos el algoritmo escogido
     for (it_states; it_states != PV_states.rend() && depth < MAX_DEPTH; it_states++) {
 
@@ -83,7 +85,7 @@ int main(int argc, const char **argv) {
             case 1:
 
                 t = clock();
-                file << setw(15) << negamax(*(it_states),depth,color,expandidos,generados);
+                file << setw(15) << -negamax(*(it_states),depth,color,expandidos,generados);
                 t = clock() - t;
                 break;
 
@@ -91,7 +93,7 @@ int main(int argc, const char **argv) {
             case 2:
                 
                 t = clock();
-                file << setw(20) << negamax_ab(*(it_states),depth,INT_MIN,INT_MAX,color,expandidos,generados);
+                file << setw(15) << -negamax_ab(*(it_states),depth,INT_MIN,INT_MAX,color,expandidos,generados);
                 t = clock() - t;
                 break;
 
