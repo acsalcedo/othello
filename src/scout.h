@@ -21,7 +21,6 @@ static bool testGreater(state_t node, int depth, int value, bool player) {
         return node.value() > value;
 
     vector<int> moves = node.get_valid_moves(player);
-    
     vector<int>::iterator children = moves.begin();
 
     for(children;children != moves.end(); children++) {
@@ -49,7 +48,6 @@ static bool testLesser(state_t node, int depth, int value, bool player) {
         return node.value() < value;
 
     vector<int> moves = node.get_valid_moves(player);
-    
     vector<int>::iterator children = moves.begin();
 
     for(children;children != moves.end(); children++) {
@@ -70,31 +68,30 @@ static bool testLesser(state_t node, int depth, int value, bool player) {
  * @param player Jugador actual.
  * @return score del camino óptimo.
  **/
-static int scout(state_t node, int depth, bool player) {
+static int scout(state_t node, int depth, bool player, int& expandidos, int& generados) {
 
     if (depth == 0 || node.terminal())  
         return node.value();
-
+    expandidos++;
     int score = 0;
 
     vector<int> moves = node.get_valid_moves(player);
-    
     vector<int>::iterator children = moves.begin();
 
+    generados = generados + moves.size();
     for(children; children != moves.end(); children++) {    
-
         state_t child = node.move(player,*children);
         
         if (children == moves.begin())
-            score = scout(child,depth-1,!player);
+            score = scout(child,depth-1,!player,expandidos,generados);
         
         else {
             
             if (!player && testGreater(child,depth-1,score,!player))
-                score = scout(child,depth-1,!player);
+                score = scout(child,depth-1,!player,expandidos,generados);
 
             if (player && testLesser(child,depth-1,score,!player))
-                score = scout(child,depth-1,!player);
+                score = scout(child,depth-1,!player,expandidos,generados);
         }
     }
     return score;
@@ -110,31 +107,32 @@ static int scout(state_t node, int depth, bool player) {
  * @param player Jugador actual.
  * @return bool Si vale la pena revisar la rama o no.
  **/
-static int negascout(state_t node, int depth, int alpha, int beta, int color) {
+static int negascout(state_t node, int depth, int alpha, int beta, int color,int& expandidos, int& generados) {
 
     if (depth == 0 || node.terminal()) 
         return color * node.value();
 
-    int score = 0;
+    expandidos++;
 
+    int score = 0;
     bool player = color == -1 ? 1 : 0;
 
     vector<int> moves = node.get_valid_moves(player);
-    
     vector<int>::iterator children = moves.begin();
 
+    generados = generados + moves.size();
+
     for(children; children != moves.end(); children++) {    
-    
         state_t child = node.move(player,*children);
         
         if (children == moves.begin())
-            score = -negascout(child,depth-1,-beta,-alpha,-color);  
+            score = -negascout(child,depth-1,-beta,-alpha,-color,expandidos,generados);  
         
         else {
-            score = -negascout(child,depth-1,-alpha-1,-alpha,-color);
+            score = -negascout(child,depth-1,-alpha-1,-alpha,-color,expandidos,generados);
 
             if (alpha < score && score < beta)
-                score = -negascout(child,depth-1,-beta,-score,-color);  
+                score = -negascout(child,depth-1,-beta,-score,-color,expandidos,generados);  
         }
 
         alpha = max(alpha,score);

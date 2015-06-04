@@ -68,20 +68,22 @@ int main(int argc, const char **argv) {
     bool player = 1; // black = 0, white = 1
 
     clock_t t;
-
+    int expandidos;
+    int generados;
     // Para cada estado de la variacion principal, usamos el algoritmo escogido
     for (it_states; it_states != PV_states.rend() && depth < MAX_DEPTH; it_states++) {
 
         file << depth;
         color *= -1;
         player = !player;
-        
+        expandidos = 0;
+        generados = 0;
         switch (algorithm) {
             // Caso 1: Algoritmo negamax
             case 1:
 
                 t = clock();
-                file << setw(15) << negamax(*(it_states),depth,color);
+                file << setw(15) << negamax(*(it_states),depth,color,expandidos,generados);
                 t = clock() - t;
                 break;
 
@@ -89,7 +91,7 @@ int main(int argc, const char **argv) {
             case 2:
                 
                 t = clock();
-                file << setw(20) << negamax_ab(*(it_states),depth,INT_MIN,INT_MAX,color);
+                file << setw(20) << negamax_ab(*(it_states),depth,INT_MIN,INT_MAX,color,expandidos,generados);
                 t = clock() - t;
                 break;
 
@@ -97,7 +99,7 @@ int main(int argc, const char **argv) {
             case 3:
                 
                 t = clock();
-                file << setw(15) << scout(*(it_states),depth,player);
+                file << setw(15) << scout(*(it_states),depth,player,expandidos,generados);
                 t = clock() - t;
                 break;
 
@@ -105,13 +107,13 @@ int main(int argc, const char **argv) {
             case 4:
 
                 t = clock();
-                file << setw(15) << negascout(*(it_states),depth,INT_MIN,INT_MAX,color);
+                file << setw(15) << negascout(*(it_states),depth,INT_MIN,INT_MAX,color,expandidos,generados);
                 t = clock() - t;
                 break;
         }
 
         depth++;
-        file << setw(20) << ((float)t)/CLOCKS_PER_SEC << std::scientific << endl;
+        file << setw(20) << ((float)t)/CLOCKS_PER_SEC << std::scientific << "\t" << expandidos << "\t" << generados << endl;
     }
 
     file.close();

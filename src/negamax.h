@@ -14,25 +14,23 @@ using namespace std;
  * @param color 1 o -1 para obtener el valor correspondiente a max o min.
  * @return score El score del camino optimo.
  **/
-static int negamax(state_t node, int depth, int color) {
+static int negamax(state_t node, int depth, int color, int& expandidos, int& generados) {
 
     if (depth == 0 || node.terminal()) 
         return color * node.value();
-    
+
+    expandidos++;
     int score = INT_MIN;
-
     bool player = color == -1 ? 1 : 0;
-
-    vector<int> moves = node.get_valid_moves(player);
-    
-    vector<int>::iterator children = moves.begin();
-
     int value;
 
+    vector<int> moves = node.get_valid_moves(player);
+    vector<int>::iterator children = moves.begin();
 
+    generados = generados + moves.size();
+    
     for (children; children != moves.end(); children++) {
-        
-        value = negamax(node.move(player,*children),depth-1,-color);
+        value = negamax(node.move(player,*children),depth-1,-color, expandidos, generados);
         
         score = max(score,-value);
     }
@@ -49,24 +47,23 @@ static int negamax(state_t node, int depth, int color) {
  * @param color 1 o -1 para obtener el valor correspondiente a max o min.
  * @return score El score del camino optimo.
  **/
-static int negamax_ab(state_t node, int depth, int alpha, int beta, int color) {
+static int negamax_ab(state_t node, int depth, int alpha, int beta, int color,int& expandidos, int& generados) {
 
     if (depth == 0 || node.terminal())
         return color * node.value();
 
+    expandidos++;
     int score = INT_MIN;
-
     bool player = color == -1 ? 1 : 0;
-
-    vector<int> moves = node.get_valid_moves(player);
-    
-    vector<int>::iterator children = moves.begin();
-
     int value;
 
+    vector<int> moves = node.get_valid_moves(player);
+    vector<int>::iterator children = moves.begin();
+
+    generados = generados + moves.size();
+
     for (children; children != moves.end(); children++) {
-    
-        value = negamax_ab(node.move(player,*children),depth-1,-beta,-alpha,-color);
+        value = negamax_ab(node.move(player,*children),depth-1,-beta,-alpha,-color,expandidos,generados);
         score = max(score,-value);
 
         alpha = max(alpha,-value);
