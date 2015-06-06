@@ -16,10 +16,10 @@ using namespace std;
  **/
 static int negamax(state_t node, int depth, int color, int& expandidos, int& generados) {
 
-    if (depth == 0 || node.terminal()) 
+    if (depth == 0 || node.terminal()) {
+        expandidos++;
         return color * node.value();
-
-    expandidos++;
+    }
     int score = INT_MIN;
     bool player = color == 1;
     int value;
@@ -53,10 +53,11 @@ static int negamax(state_t node, int depth, int color, int& expandidos, int& gen
  **/
 static int negamax_ab(state_t node, int depth, int alpha, int beta, int color,int& expandidos, int& generados) {
 
-    if (depth == 0 || node.terminal())
+    if (depth == 0 || node.terminal()) {
+        expandidos++;
         return color * node.value();
+    }
 
-    expandidos++;
     int score = INT_MIN;
     bool player = color == 1;
     int value;

@@ -23,14 +23,19 @@ static bool testGreater(state_t node, int depth, int value, bool player) {
     vector<int> moves = node.get_valid_moves(player);
     vector<int>::iterator children = moves.begin();
 
+    if (moves.size() == 0)
+        return testGreater(node,depth,value,!player);
+
     for(children;children != moves.end(); children++) {
 
-        if (!player && testGreater(node.move(player,*children),depth-1,value,!player))
+        state_t  child = node.move(player,*children);
+
+        if (!player && testGreater(child,depth-1,value,!player))
             return true;
-        if (player && !testGreater(node.move(player,*children),depth-1,value,!player))
+        if (player && !testGreater(child,depth-1,value,!player))
             return false;
     }   
-    return !player ? false : true;
+    return player;
 }
 
 /**
@@ -50,14 +55,19 @@ static bool testLesser(state_t node, int depth, int value, bool player) {
     vector<int> moves = node.get_valid_moves(player);
     vector<int>::iterator children = moves.begin();
 
+    if (moves.size() == 0)
+        return testLesser(node,depth,value,!player);
+    
     for(children;children != moves.end(); children++) {
 
-        if (!player && !testLesser(node.move(player,*children),depth-1,value,!player))
+        state_t  child = node.move(player,*children);
+
+        if (!player && !testLesser(child,depth-1,value,!player))
             return false;
-        if (player && testLesser(node.move(player,*children),depth-1,value,!player))
+        if (player && testLesser(child,depth-1,value,!player))
             return true;
     }   
-    return player ? false : true;
+    return !player;
 }
 
 /**
@@ -70,19 +80,25 @@ static bool testLesser(state_t node, int depth, int value, bool player) {
  **/
 static int scout(state_t node, int depth, bool player, int& expandidos, int& generados) {
 
-    if (depth == 0 || node.terminal())  
+    if (depth == 0 || node.terminal()) {  
+        expandidos++;
         return node.value();
-    expandidos++;
-    int score = 0;
+    }
+
+    int score = INT_MIN;
 
     vector<int> moves = node.get_valid_moves(player);
     vector<int>::iterator children = moves.begin();
 
-    generados = generados + moves.size();
-    for(children; children != moves.end(); children++) {    
-        state_t child = node.move(player,*children);
+    if (moves.size() == 0)
+        return scout(node,depth,!player,expandidos,generados);
+
+    for(int i = 0; i < moves.size(); i++) {    
+
+        state_t child = node.move(player,moves[i]);
+        generados++;
         
-        if (children == moves.begin())
+        if (i == 0)
             score = scout(child,depth-1,!player,expandidos,generados);
         
         else {
@@ -109,38 +125,42 @@ static int scout(state_t node, int depth, bool player, int& expandidos, int& gen
  **/
 static int negascout(state_t node, int depth, int alpha, int beta, int color,int& expandidos, int& generados) {
 
-    if (depth == 0 || node.terminal()) 
+    if (depth == 0 || node.terminal()) {
+        expandidos++;
         return color * node.value();
+    }
 
-    expandidos++;
-
-    int score = 0;
-    bool player = color == -1 ? 1 : 0;
+    int score = INT_MIN;
+    bool player = color == 1;
 
     vector<int> moves = node.get_valid_moves(player);
     vector<int>::iterator children = moves.begin();
 
-    generados = generados + moves.size();
+    if (moves.size() == 0) {
+        score = -negascout(node,depth,-beta,-alpha,-color,expandidos,generados);
+    }
 
-    for(children; children != moves.end(); children++) {    
+    int t, upperBound = beta;
+
+    for(children; children != moves.end(); children++) { 
+        generados++;   
         state_t child = node.move(player,*children);
         
-        if (children == moves.begin())
-            score = -negascout(child,depth-1,-beta,-alpha,-color,expandidos,generados);  
-        
-        else {
-            score = -negascout(child,depth-1,-alpha-1,-alpha,-color,expandidos,generados);
-
-            if (alpha < score && score < beta)
-                score = -negascout(child,depth-1,-beta,-score,-color,expandidos,generados);  
+        t = -negascout(child,depth-1,-upperBound,-max(alpha,score),-color,expandidos,generados);  
+          
+        if (t >= score) {
+            if (upperBound == beta || depth < 3 || t >= beta)
+                score = t;
+            else    
+                score = -negascout(child,depth-1,-beta,-t,-color,expandidos,generados);  
         }
 
-        alpha = max(alpha,score);
-        
-        if (alpha >= beta)
-            break;
+        if (score >= beta)
+            return score;
+
+        upperBound = max(alpha,score) + 1;
     }
-    return alpha;
+    return score;
 }
 
 #endif 

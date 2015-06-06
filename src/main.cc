@@ -7,7 +7,7 @@
 #include <string>
 #include <iomanip>
 
-#define MAX_DEPTH 9
+#define MAX_DEPTH 10
 
 using namespace std;
 
@@ -65,7 +65,7 @@ int main(int argc, const char **argv) {
 
     int color = 1; // black = 1 (max), white = -1 (min)
     int depth = 0;
-    bool player = 1; // black = 0, white = 1
+    bool player = 0; // black = 0, white = 1
 
     clock_t t;
     int expandidos;
@@ -93,7 +93,7 @@ int main(int argc, const char **argv) {
             case 2:
                 
                 t = clock();
-                file << setw(15) << -negamax_ab(*(it_states),depth,INT_MIN,INT_MAX,color,expandidos,generados);
+                file << setw(15) << -negamax_ab(*(it_states),depth,INT_MIN+1,INT_MAX,color,expandidos,generados);
                 t = clock() - t;
                 break;
 
@@ -101,7 +101,7 @@ int main(int argc, const char **argv) {
             case 3:
                 
                 t = clock();
-                file << setw(15) << scout(*(it_states),depth,player,expandidos,generados);
+                file << setw(15) << scout(*(it_states),depth,!player,expandidos,generados);
                 t = clock() - t;
                 break;
 
@@ -109,7 +109,7 @@ int main(int argc, const char **argv) {
             case 4:
 
                 t = clock();
-                file << setw(15) << negascout(*(it_states),depth,INT_MIN,INT_MAX,color,expandidos,generados);
+                file << setw(15) << -negascout(*(it_states),depth,INT_MIN+1,INT_MAX,color,expandidos,generados);
                 t = clock() - t;
                 break;
         }
