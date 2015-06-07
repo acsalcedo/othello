@@ -26,14 +26,15 @@ static int negamax(state_t node, int depth, int color, int& expandidos, int& gen
 
     vector<int> moves = node.get_valid_moves(player);
     vector<int>::iterator children = moves.begin();
-
-    generados = generados + moves.size();
     
     //Pass
-    if (moves.size() == 0)
+    if (moves.size() == 0) {
+        generados++;
         score = -negamax(node,depth,-color,expandidos,generados);
+    }
     
     for (children; children != moves.end(); children++) {
+        generados++;
         value = -negamax(node.move(player,*children),depth-1,-color, expandidos, generados);
         
         score = max(score,value);
@@ -65,12 +66,13 @@ static int negamax_ab(state_t node, int depth, int alpha, int beta, int color,in
     vector<int> moves = node.get_valid_moves(player);
     vector<int>::iterator children = moves.begin();
 
-    generados = generados + moves.size();
+    //generados = generados + moves.size();
     //Pass
     if (moves.size() == 0)
         score = -negamax_ab(node,depth,-beta,-alpha,-color,expandidos,generados);
 
     for (children; children != moves.end(); children++) {
+        generados++;
         value = -negamax_ab(node.move(player,*children),depth-1,-beta,-alpha,-color,expandidos,generados);
         score = max(score,value);
         alpha = max(alpha,value);

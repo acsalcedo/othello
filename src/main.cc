@@ -7,7 +7,7 @@
 #include <string>
 #include <iomanip>
 
-#define MAX_DEPTH 10
+#define MAX_DEPTH 25
 
 using namespace std;
 
@@ -65,13 +65,14 @@ int main(int argc, const char **argv) {
 
     int color = 1; // black = 1 (max), white = -1 (min)
     int depth = 0;
-    bool player = 0; // black = 0, white = 1
+    bool player = 1; // black = 0, white = 1
 
     clock_t t;
     int expandidos;
     int generados;
 
     //it_states++;
+    file << "depth\t   value\t  time\t\tgenerated\texpanded(leaf)" << endl;
     // Para cada estado de la variacion principal, usamos el algoritmo escogido
     for (it_states; it_states != PV_states.rend() && depth < MAX_DEPTH; it_states++) {
 
@@ -101,7 +102,7 @@ int main(int argc, const char **argv) {
             case 3:
                 
                 t = clock();
-                file << setw(15) << scout(*(it_states),depth,!player,expandidos,generados);
+                file << setw(15) << scout(*(it_states),depth,player,expandidos,generados);
                 t = clock() - t;
                 break;
 
@@ -115,7 +116,7 @@ int main(int argc, const char **argv) {
         }
 
         depth++;
-        file << setw(20) << ((float)t)/CLOCKS_PER_SEC << std::scientific << "\t" << expandidos << "\t" << generados << endl;
+        file << setw(20) << ((float)t)/CLOCKS_PER_SEC << std::scientific << "\t" << generados << "\t\t" << expandidos << endl;
     }
 
     file.close();

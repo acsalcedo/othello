@@ -30,12 +30,12 @@ static bool testGreater(state_t node, int depth, int value, bool player) {
 
         state_t  child = node.move(player,*children);
 
-        if (!player && testGreater(child,depth-1,value,!player))
+        if (player && testGreater(child,depth-1,value,!player))
             return true;
-        if (player && !testGreater(child,depth-1,value,!player))
+        if (!player && !testGreater(child,depth-1,value,!player))
             return false;
     }   
-    return player;
+    return !player;
 }
 
 /**
@@ -62,12 +62,12 @@ static bool testLesser(state_t node, int depth, int value, bool player) {
 
         state_t  child = node.move(player,*children);
 
-        if (!player && !testLesser(child,depth-1,value,!player))
+        if (player && !testLesser(child,depth-1,value,!player))
             return false;
-        if (player && testLesser(child,depth-1,value,!player))
+        if (!player && testLesser(child,depth-1,value,!player))
             return true;
     }   
-    return !player;
+    return player;
 }
 
 /**
@@ -86,7 +86,6 @@ static int scout(state_t node, int depth, bool player, int& expandidos, int& gen
     }
 
     int score = INT_MIN;
-
     vector<int> moves = node.get_valid_moves(player);
     vector<int>::iterator children = moves.begin();
 
@@ -103,10 +102,10 @@ static int scout(state_t node, int depth, bool player, int& expandidos, int& gen
         
         else {
             
-            if (!player && testGreater(child,depth-1,score,!player))
+            if (player && testGreater(child,depth-1,score,!player))
                 score = scout(child,depth-1,!player,expandidos,generados);
 
-            if (player && testLesser(child,depth-1,score,!player))
+            if (!player && testLesser(child,depth-1,score,!player))
                 score = scout(child,depth-1,!player,expandidos,generados);
         }
     }
