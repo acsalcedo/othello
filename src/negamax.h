@@ -12,7 +12,9 @@ using namespace std;
  * @param node Nodo con el estado actual.
  * @param depth Profundidad que falta para llegar al final de la busqueda.
  * @param color 1 o -1 para obtener el valor correspondiente a max o min.
- * @return score El score del camino optimo.
+ * @param expandidos Numero de nodos expandidos (hojas).
+ * @param generados Numero de nodos generados.
+ * @return El score del camino optimo.
  **/
 static int negamax(state_t node, int depth, int color, int& expandidos, int& generados) {
 
@@ -50,7 +52,9 @@ static int negamax(state_t node, int depth, int color, int& expandidos, int& gen
  * @param alpha Primer valor de comparacion para prunning.
  * @param beta Segundo valor de comparacion para prunning.
  * @param color 1 o -1 para obtener el valor correspondiente a max o min.
- * @return score El score del camino optimo.
+ * @param expandidos Numero de nodos expandidos (hojas).
+ * @param generados Numero de nodos generados.
+ * @return El score del camino optimo.
  **/
 static int negamax_ab(state_t node, int depth, int alpha, int beta, int color,int& expandidos, int& generados) {
 
@@ -66,7 +70,6 @@ static int negamax_ab(state_t node, int depth, int alpha, int beta, int color,in
     vector<int> moves = node.get_valid_moves(player);
     vector<int>::iterator children = moves.begin();
 
-    //generados = generados + moves.size();
     //Pass
     if (moves.size() == 0)
         score = -negamax_ab(node,depth,-beta,-alpha,-color,expandidos,generados);

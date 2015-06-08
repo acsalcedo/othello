@@ -7,7 +7,7 @@
 #include <string>
 #include <iomanip>
 
-#define MAX_DEPTH 25
+#define MAX_DEPTH 12
 
 using namespace std;
 
@@ -71,8 +71,8 @@ int main(int argc, const char **argv) {
     int expandidos;
     int generados;
 
-    //it_states++;
     file << "depth\t   value\t  time\t\tgenerated\texpanded(leaf)" << endl;
+
     // Para cada estado de la variacion principal, usamos el algoritmo escogido
     for (it_states; it_states != PV_states.rend() && depth < MAX_DEPTH; it_states++) {
 
