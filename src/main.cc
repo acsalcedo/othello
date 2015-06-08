@@ -46,7 +46,6 @@ int main(int argc, const char **argv) {
     state_t state;
     std::vector<state_t> PV_states;
     
-    // Black moves first and is equal to 0
     // Almacenamos los estados de la variacion principal
     for(int i = 0; PV[i] != -1; ++i) {
 

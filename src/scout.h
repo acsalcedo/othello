@@ -57,7 +57,7 @@ static bool testLesser(state_t node, int depth, int value, bool player) {
     vector<int>::iterator children = moves.begin();
 
     //Pass
-    if (moves.size() == 0)
+    if (moves.size() == 0) 
         return testLesser(node,depth,value,!player);
     
     for(children;children != moves.end(); children++) {
@@ -94,8 +94,10 @@ static int scout(state_t node, int depth, bool player, int& expandidos, int& gen
     vector<int>::iterator children = moves.begin();
 
     //Pass
-    if (moves.size() == 0)
+    if (moves.size() == 0) {
+        generados++;
         return scout(node,depth,!player,expandidos,generados);
+    }
 
     for(int i = 0; i < moves.size(); i++) {    
 
@@ -147,8 +149,10 @@ static int negascout(state_t node, int depth, int alpha, int beta, int color,int
     b = beta;
     
     //Pass
-    if (moves.size() == 0)
+    if (moves.size() == 0) {
+        generados++;
         return -negascout(node,depth,-b,-a,-color,expandidos,generados);
+    }
 
     state_t child;
    
@@ -159,9 +163,10 @@ static int negascout(state_t node, int depth, int alpha, int beta, int color,int
         
         t = -negascout(child,depth-1,-b,-a,-color,expandidos,generados);
       
-        if ((t > a) && (t < beta) && (i > 0) && (depth > 1))
+        if ((t > a) && (t < beta) && (i > 0) && (depth > 1)) {
+            generados++;
             a = -negascout(child,depth-1,-beta,-t,-color,expandidos,generados);
-      
+        }
         a = max(a,t);
         
         if (a >= beta)
