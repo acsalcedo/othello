@@ -75,6 +75,7 @@ static int negamax_ab(state_t node, int depth, int alpha, int beta, int color,in
         generados++;
         score = -negamax_ab(node,depth,-beta,-alpha,-color,expandidos,generados);
     }
+    
     for (children; children != moves.end(); children++) {
         generados++;
         value = -negamax_ab(node.move(player,*children),depth-1,-beta,-alpha,-color,expandidos,generados);

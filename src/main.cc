@@ -7,7 +7,7 @@
 #include <string>
 #include <iomanip>
 
-#define MAX_DEPTH 12
+#define MAX_DEPTH 33
 
 using namespace std;
 
